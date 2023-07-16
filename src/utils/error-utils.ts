@@ -2,6 +2,7 @@
 import { ResponseType } from "api/todolists-api";
 import { Dispatch } from "redux";
 import { appAction } from "app/app-reducer";
+import axios, { AxiosError } from "axios";
 
 export const handleServerAppError = <D>(
   data: ResponseType<D>,
@@ -18,7 +19,21 @@ export const handleServerAppError = <D>(
   dispatch(appAction.setStatus({status: "failed"}))
 };
 
-export const handleServerNetworkError = (
+//утилита для показа ошибок
+export const handleServerNetworkError = (e: unknown, dispatch: Dispatch) => {
+  const err = e as Error | AxiosError<{error: string}>
+  if(axios.isAxiosError(err)) {
+    const error = err.message ? err.message: 'Some error occurred'
+    dispatch(appAction.setError({error}))
+  } else {
+    dispatch(appAction.setError({error : `Native error ${err.message}`}))
+  }
+  dispatch(appAction.setStatus({status: "failed"}))
+}
+
+
+
+export const _handleServerNetworkError = (
   error: { message: string },
   dispatch: Dispatch,
 ) => {

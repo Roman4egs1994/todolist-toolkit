@@ -1,6 +1,7 @@
-import { TodolistDomainType, todolistsActions, todolistsReducer } from "./todolists-reducer";
+import { TodolistDomainType, todolistsActions, todolistsReducer, todolistsThunks } from "./todolists-reducer";
 import { tasksReducer, TasksStateType } from "./tasks-reducer";
 import { TodolistType } from "api/todolists-api";
+import any = jasmine.any;
 
 test("ids should be equals", () => {
   const startTasksState: TasksStateType = {};
@@ -14,7 +15,12 @@ test("ids should be equals", () => {
   };
 
   // const action = addTodolistAC(todolist);
-  const action = todolistsActions.addTodolist({todolist:todolist});
+  // const action = todolistsActions.addTodolist({todolist:todolist});
+  const action = todolistsThunks.addTodolist.fulfilled({
+    resultCode: 0,
+    messages: [],
+    data: { item: todolist },
+  }, "requestId", '' );
 
   const endTasksState = tasksReducer(startTasksState, action);
   const endTodolistsState = todolistsReducer(startTodolistsState, action);
@@ -23,6 +29,6 @@ test("ids should be equals", () => {
   const idFromTasks = keys[0];
   const idFromTodolists = endTodolistsState[0].id;
 
-  expect(idFromTasks).toBe(action.payload.todolist.id);
-  expect(idFromTodolists).toBe(action.payload.todolist.id);
+  expect(idFromTasks).toBe(action.payload.data.item.id);
+  expect(idFromTodolists).toBe(action.payload.data.item.id);
 });

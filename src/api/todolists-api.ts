@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UpdateDomainTaskModelType } from "features/TodolistsList/tasks-reducer";
 
 const settings = {
   withCredentials: true,
@@ -23,23 +24,23 @@ export const todolistsAPI = {
     });
     return promise;
   },
-  deleteTodolist(id: string) {
-    const promise = instance.delete<ResponseType>(`todo-lists/${id}`);
+  deleteTodolist(arg:DeleteTodolistType) {
+    const promise = instance.delete<ResponseType>(`todo-lists/${arg.todolistId}`);
     return promise;
   },
-  updateTodolist(id: string, title: string) {
-    const promise = instance.put<ResponseType>(`todo-lists/${id}`, { title: title });
+  updateTodolist(arg:UpdateTodolistType) {
+    const promise = instance.put<ResponseType>(`todo-lists/${arg.id}`, { title: arg.title });
     return promise;
   },
   getTasks(todolistId: string) {
     return instance.get<GetTasksResponse>(`todo-lists/${todolistId}/tasks`);
   },
-  deleteTask(todolistId: string, taskId: string) {
-    return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
+  deleteTask(arg:RemoveTaskArgType) {
+    return instance.delete<ResponseType>(`todo-lists/${arg.todolistId}/tasks/${arg.taskId}`);
   },
-  createTask(todolistId: string, taskTitile: string) {
-    return instance.post<ResponseType<{ item: TaskType }>>(`todo-lists/${todolistId}/tasks`, {
-      title: taskTitile,
+  createTask(arg:AddTaskArgType) {
+    return instance.post<ResponseType<{ item: TaskType }>>(`todo-lists/${arg.todolistId}/tasks`, {
+      title: arg.title,
     });
   },
   updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
@@ -120,3 +121,21 @@ type GetTasksResponse = {
   totalCount: number;
   items: TaskType[];
 };
+
+
+export type  AddTaskArgType = {todolistId:string, title:string}
+export type RemoveTaskArgType = { todolistId: string; taskId: string; };
+export type UpdateTaskArgType = {
+  taskId: string,
+  todolistId: string,
+  domainModel: UpdateDomainTaskModelType
+}
+
+
+export type DeleteTodolistType = {
+  todolistId: string
+}
+
+export type UpdateTodolistType = {
+  id: string, title: string
+}
